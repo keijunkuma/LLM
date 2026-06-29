@@ -45,32 +45,31 @@ print(f"📉 抽出完了！ 語彙サイズ: {tokenizer.vocab_size} ➔ {new_vo
 # ==========================================
 # フェーズ2: モデルのテンソルの物理的スライス
 # ==========================================
-print("🧠 モデル本体をCPUメモリに読み込んでいます（時間がかかります）...")
+print("🧠 モデル本体を読み込んでいます...")
 model = AutoModelForCausalLM.from_pretrained(
     model_id,
     trust_remote_code=True,
     torch_dtype=torch.float16,
-    device_map="cpu"
+    device_map="cuda"
 )
 
 print("🔪 テンソルの外科手術（スライス）を開始します...")
 # 1. Embedding層
-old_embeddings = model.model.embed_tokens.weight.data
+old_embeddings = model.model.language_model.embed_tokens.weight.data
 new_embeddings = old_embeddings[keep_ids]
-model.model.embed_tokens = nn.Embedding(new_vocab_size, model.config.hidden_size, dtype=torch.float16)
-model.model.embed_tokens.weight.data = new_embeddings
+model.model.language_model.embed_tokens = nn.Embedding(new_vocab_size, model.config.text_config.hidden_size, dtype=torch.float16)
+model.model.language_model.embed_tokens.weight.data = new_embeddings
 
 # 2. LM Head層
 old_lm_head = model.lm_head.weight.data
 new_lm_head = old_lm_head[keep_ids]
-model.lm_head = nn.Linear(model.config.hidden_size, new_vocab_size, bias=False, dtype=torch.float16)
+model.lm_head = nn.Linear(model.config.text_config.hidden_size, new_vocab_size, bias=False, dtype=torch.float16)
 model.lm_head.weight.data = new_lm_head
 
 # Configの更新
 model.config.vocab_size = new_vocab_size
 
-print("✅ 外科手術完了！モデルをGPUに転送します...")
-model = model.to("cuda")
+print("✅ 外科手術完了！")
 
 # ==========================================
 # フェーズ3: ID変換用マッピングの作成
