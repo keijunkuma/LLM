@@ -1,0 +1,38 @@
+# ==========================
+# Core
+# ==========================
+accelerate>=1.8.0
+
+# QLoRA / Quantization
+bitsandbytes>=0.46.0
+
+# Tokenizer
+sentencepiece>=0.2.0
+protobuf>=6.31.0
+safetensors>=0.5.3
+
+# Data
+pandas>=2.3.0
+numpy>=2.3.1
+
+# Validation
+pydantic>=2.11.7
+jsonschema>=4.25.0
+
+# Progress
+tqdm>=4.67.1
+
+# Fast JSON
+orjson>=3.11.0
+
+# Logging
+rich>=14.1.0
+
+# System
+psutil>=7.0.0
+
+# Utilities
+python-dotenv>=1.1.1
+
+# Optional
+matplotlib>=3.10.5
